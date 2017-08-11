@@ -14,7 +14,7 @@ class Video extends React.Component {
 
         // Initializing the state object
         this.state = {
-            vidTime: 0,
+            vidTime: 0,     // Percentage of video played
         };
 
         // Denotes if the video player is in fullscreen mode
@@ -33,7 +33,7 @@ class Video extends React.Component {
                     vidPause={this.vidPause.bind(this)}
                     vidPlay={this.vidPlay.bind(this)}
                     toggleMute={this.toggleMute.bind(this)}
-                    seekBarOnChange={this.seekVideo.bind(this)}
+                    seekVideo={this.seekVideo.bind(this)}
                     changeVolume={this.changeVolume.bind(this)}
                     toggleFullscreen={this.toggleFullscreen.bind(this)}
                     vidTime={this.state.vidTime}

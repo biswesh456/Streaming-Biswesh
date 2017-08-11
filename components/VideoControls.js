@@ -2,13 +2,14 @@ const React = require("react");
 
 // Props that should be passed
 //      -width : width of the control bar
-//      -setVideoSpeed
-//      -togglePlayPause
-//      -toggleMute
-//      -seekBarOnChange
-//      -changeVolume
+//      -setVideoSpeed : handler when speed is changed
+//      -vidPlay : to play/resume the video
+//      -vidPause : to pause the video
+//      -toggleMute : to mute/unmute video
+//      -seekVideo : handler when value of seek bar is changed
+//      -changeVolume : handler for when volume bar value is changed
 //      -toggleFullscreen : Function to take video to full screen
-//      -vidTime :  Current duration of video to set the value of seekbar
+//      -vidTime :  Current duration of video to set the value of seek bar
 
 class VideoControls extends React.Component {
     constructor(props) {
@@ -25,11 +26,11 @@ class VideoControls extends React.Component {
     
     render() {
         return (
-            <div id="video-controls">
+            <div className="video-controls">
                 <button type="button" className="vc-play-pause" onClick={this.togglePlayPause.bind(this)}>
                     {this.state.play ? "Pause" : "Play"}
                 </button>
-                <input type="range" className="vc-seek-bar" value={this.props.vidTime} onChange={this.seekVideo.bind(this)} onMouseDown={this.seekBarMD.bind(this)} onMouseUp={this.togglePlayPause.bind(this)}/>
+                <input type="range" className="vc-seek-bar" value={this.props.vidTime} onChange={(e) => this.props.seekVideo(e.target.value)} onMouseDown={this.seekBarMD.bind(this)} onMouseUp={this.seekBarMU.bind(this)}/>
                 <button type="button" className="vc-mute-btn" onClick={this.toggleMute.bind(this)}>
                     {this.state.mute ? "Unmute" : "Mute"}
                 </button>
@@ -56,10 +57,24 @@ class VideoControls extends React.Component {
     }
 
     seekBarMD() {
-        this.setState((prevState, props) => ({
-            play: !prevState.play
-        }));
+        this.setState((prevState, props) => {
+            // Used by mouse up event to maintain the same play
+            // state after seek. Not related to UI render, hence
+            // it need not be a component state.
+            this.playBeforeSeek = prevState.play;
+            return {
+                play: false
+            };
+        });
         this.props.vidPause();
+    }
+
+    seekBarMU() {
+        // If video was playing before seek then resume video
+        if(this.playBeforeSeek) this.props.vidPlay();
+        this.setState({
+            play: this.playBeforeSeek
+        });
     }
 
     toggleMute() {
@@ -77,18 +92,12 @@ class VideoControls extends React.Component {
         this.props.setVideoSpeed(newSpeed);
     }
 
-    seekVideo(event) {
-        this.setState({
-            seekBarVal: event.target.value
-        });
-        this.props.seekBarOnChange(event.target.value);
-    }
-
     changeVolume(event) {
+        var newVol = event.target.value;
         this.setState({
-            volume: event.target.value
+            volume: newVol
         });
-        this.props.changeVolume(event.target.value);
+        this.props.changeVolume(newVol);
     }
 };
 
