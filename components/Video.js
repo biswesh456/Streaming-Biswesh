@@ -24,7 +24,7 @@ class Video extends React.Component {
     render() {
         return (
             <div className="video-container" id={this.props.vidID}>
-                <video width={this.props.width} height={this.props.height} ref={el => this.video = el} onTimeUpdate={this.onTimeUpdate.bind(this)}>
+                <video width={this.props.width} height={this.props.height} ref={el => this.video = el} onTimeUpdate={this.onTimeUpdate.bind(this)} onDoubleClick={this.toggleFullscreen.bind(this)}>
                     <source src={this.props.vidsrc} type={this.props.vidtype} />
                 </video>
                 <VideoControls 
@@ -73,14 +73,12 @@ class Video extends React.Component {
         this.video.volume = volume;
     }
 
-    // NOT WORKING!!
     toggleFullscreen() {
-        if(this.fullscreen) {
-            document.webkitExitFullscreen();
-        } else {
-            this.screen.webkitRequestFullscreen();
-        }
-        this.fullscreen = !this.fullscreen;
+        // To disable default controls in fullscreen use the following style
+        // video::-webkit-media-controls {
+        //     display:none !important;
+        // }
+        (document.getElementById(this.props.vidID)).getElementsByTagName("video").webkitRequestFullscreen();
     }
 };
 
